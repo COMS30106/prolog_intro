@@ -36,44 +36,45 @@ Write queries to answer the following questions (NB. Press **next**, **10**, **1
 
 <div class="nb-cell query">
 % In which year was the movie American Beauty released?
-
+movie(american_beauty,Y).
 </div>
 
 <div class="nb-cell query">
 % Find a movie that was released in the year 2000?
-
+movie(M,2000).
 </div>
 
 <div class="nb-cell query">
 % Find a movie that was released before 2000?
-
+movie(M,Y),Y&lt;2000.
 </div>
 
 <div class="nb-cell query">
 % Find the name and year of a movie?
-
+movie(M,Y).
 </div>
 
 <div class="nb-cell query">
 % Find an actor who has appeared in more than one movie?
-
+actor(M1,A,_),actor(M2,A,_),M1@&lt;M2.
+% or just M1\=M2.
 </div>
 
 <div class="nb-cell query">
 % Find a director who has directed a movie in which the actress Scarlett Johansson appeared?
-
+actress(M,scarlett_johansson,_),director(M,D).
 </div>
 
 <div class="nb-cell query">
 % Find an actor who has also directed a movie?
-
+director(M,A),actor(M,A,_).
 </div>
 
 <div class="nb-cell query">
 % Find an actor or actress who has also directed a movie?
 % (Hint: to do this in a single query you will need to use disjunction
 % (semicolon) as well as conjunction (comma). 
-
+director(M,A),(actor(M,A,_);actress(M,A,_)).
 </div>
 
 <div class="nb-cell markdown">
@@ -88,7 +89,8 @@ Write a definition in Prolog for each of the following predicates.
 <div class="nb-cell program" data-background="true">
 % released_since(M,Y) &lt;- movie M was released after year X
 released_since(M,Y) :-
-    true.
+    movie(M,X),
+    X&gt;Y.
 </div>
 
 <div class="nb-cell query">
@@ -98,7 +100,9 @@ released_since(M, 2001).
 <div class="nb-cell program" data-background="true">
 % released_between(M,Y1,Y2) &lt;- movie M was released between year X and year Y inclusive
 released_between(M,Y1,Y2) :-
-    true.
+    movie(M,Y),
+    Y&gt;=Y1,
+    Y=&lt;Y2.
 </div>
 
 <div class="nb-cell query">
@@ -108,7 +112,9 @@ released_between(M, 2002, 2004).
 <div class="nb-cell program" data-background="true">
 % same_year_as(M1,M2) &lt;- movie M1 was released in the same year as movie M2
 same_year_as(M1,M2) :-
-    true.
+    movie(M1,Y),
+    movie(M2,Y),
+    M1\=M2.
 </div>
 
 <div class="nb-cell query">
@@ -118,7 +124,9 @@ same_year_as(M1, M2).
 <div class="nb-cell program" data-background="true">
 % newer(M1,M2) &lt;- movie M1 was released after movie M2
 newer(M1,M2) :-
-    true.
+    movie(M1,Y1),
+    movie(M2,Y2),
+    Y1&gt;Y2.
 </div>
 
 <div class="nb-cell query">
@@ -129,9 +137,9 @@ newer(M1, M2).
 % cast_member(A,M) &lt;- person A was an actor or actress in movie M
 % (Give as a two predicates)
 cast_member(A,M) :-
-    true.
+    actor(M,A,_).
 cast_member(A,M) :-
-    true.
+    actress(M,A,_).
 </div>
 
 <div class="nb-cell query">
@@ -142,7 +150,8 @@ cast_member(A, M).
 % cast_member2(A,M) &lt;- person A was an actor or actress in movie M
 % (Give as a single predicate using the ; disjunction predicate)
 cast_member2(A,M) :-
-    true.
+    actor(M,A,_);
+    actress(M,A,_).
 </div>
 
 <div class="nb-cell query">
@@ -153,7 +162,8 @@ cast_member2(A, M).
 % directed_by(X,Y) &lt;- person X has been in a movie directed by Y
 % (Hint: re-use your cast_member/2 predicate)
 directed_by(X,Y) :-
-    true.
+    director(M,Y),
+    cast_member(X,M).
 </div>
 
 <div class="nb-cell query">
@@ -171,7 +181,6 @@ What's the difference between these queries?
 
 <div class="nb-cell query">
 % you can test these queries in this box
-
 </div>
 
 <div class="nb-cell markdown">
@@ -191,7 +200,6 @@ Why do these queries return answers multiple times?
 
 <div class="nb-cell query">
 % you can test these queries in this box
-
 </div>
 
 <div class="nb-cell markdown">
@@ -221,8 +229,9 @@ Extend it with a third argument that contains the list with X removed.
 
 <div class="nb-cell program" data-background="true">
 % remove_one(X,Ys,Zs) &lt;- list Zs is list Ys without one occurrence of X
-remove_one(X,Ys,Zs) :- 
-        true.
+remove_one(X,[X|Ys],Ys).
+remove_one(X,[Y|Ys],[Y|Zs]) :- 
+        remove_one(X,Ys,Zs).
 </div>
 
 <div class="nb-cell query">
@@ -238,8 +247,10 @@ Next, adapt the predicate such that it succeeds if X does not occur in the list,
 % remove_one2(X,Ys,Zs) &lt;- list Zs is list Ys without one occurrence of X
 %                         if it occurs in Ys, and Zs is Ys otherwise
 % NB. Not entirely correct as it will also succeed if X occurs in Ys and Zs=Ys
-remove_one2(X,Ys,Zs) :- 
-        true.
+remove_one2(X,[],[]).
+remove_one2(X,[X|Ys],Ys).
+remove_one2(X,[Y|Ys],[Y|Zs]) :- 
+        remove_one2(X,Ys,Zs).
 </div>
 
 <div class="nb-cell query">
@@ -254,8 +265,11 @@ Next, adapt the predicate such that it removes all occurrences (if any) of X.
 <div class="nb-cell program" data-background="true">
 % remove_all(X,Ys,Zs) &lt;- list Zs is list Ys without any occurrences of X
 % NB. Not entirely correct as it will also succeed with some occurrences of X in Zs
-remove_all(X,Ys,Zs) :-
-    true.
+remove_all(X,[],[]).
+remove_all(X,[X|Ys],Zs) :- 
+        remove_all(X,Ys,Zs).
+remove_all(X,[Y|Ys],[Y|Zs]) :- 
+        remove_all(X,Ys,Zs).
 </div>
 
 <div class="nb-cell query">
@@ -281,8 +295,10 @@ Adapt the predicate such that it only succeeds if Xs is a proper subset of Ys (i
 <div class="nb-cell program" data-background="true">
 % proper_subset(Xs,Ys) &lt;- every element of list Xs occurs in list Ys, and 
 %                         Ys has at least one element more than Xs
-proper_subset(Xs,Ys) :- 
-        true.
+proper_subset([],[_|_]).
+proper_subset([X|Xs],Ys) :- 
+        remove_one(X,Ys,Zs),
+        proper_subset(Xs,Zs).
 </div>
 
 <div class="nb-cell query">
@@ -296,8 +312,11 @@ Adapt the original predicate such that it only succeeds if every element of Xs o
 
 <div class="nb-cell program" data-background="true">
 % subset_ord(Xs,Ys) &lt;- every element of list Xs occurs in the same order in list Ys
-subset_ord(Xs,Ys) :- 
-        true.
+subset_ord([],_).
+subset_ord([X|Xs],[X|Ys]) :- 
+        subset_ord(Xs,Ys).
+subset_ord(Xs,[_|Ys]) :- 
+        subset_ord(Xs,Ys).
 </div>
 
 <div class="nb-cell query">
@@ -324,13 +343,18 @@ Both predicates succeed several times with the empty list for queries of the for
 
 <div class="nb-cell program" data-background="true">
 % subseq1(Xs,Ys) &lt;- every element of list Xs occurs in the same order and contiguously in list Ys
-subseq1(Xs,Ys) :-
-        true.
+subseq1([],_).
+subseq1([B|Bs],ABC) :-
+        append(_,BC,ABC),
+        append([B|Bs],_,BC).
 % subseq2(Xs,Ys) &lt;- every element of list Xs occurs in the same order and contiguously in list Ys
 % NB. The first two clauses can be combined into subseq2(Xs,Ys) :- append(Xs,_,Ys)
 % i.e., the original base case
-subseq2(Xs,Ys) :- 
-        true.
+subseq2([],_).
+subseq2([X|Xs],Ys) :- 
+        append([X|Xs],_,Ys).
+subseq2([X|Xs],[_|Ys]) :- 
+        subseq2([X|Xs],Ys).
 </div>
 
 <div class="nb-cell query">
@@ -376,8 +400,18 @@ Keep in mind, though, that terms such as U+V are still trees with the functor at
 </div>
 
 <div class="nb-cell program" data-background="true">
-diff(A,B,C) :-
-    true.
+diff(x,x,1).
+diff(minus(U),x,minus(RU)) :-
+    diff(U,x,RU).
+diff(plus(U,V),x,plus(RU,RV)) :-
+    diff(U,x,RU),
+    diff(V,x,RV).
+diff(minus(U,V),x,minus(RU,RV)) :-
+    diff(U,x,RU),
+    diff(V,x,RV).
+diff(times(U,V),x,plus(times(U,RV),times(V,RU))) :-
+    diff(U,x,RU),
+    diff(V,x,RV).
 </div>
 
 <div class="nb-cell query">
@@ -405,8 +439,19 @@ Note: Most likely, you will get a variety of answers, among which the desired on
 </div>
 
 <div class="nb-cell program" data-background="true">
-simp(A,B) :-
-    true.
+simp(times(U,1),V) :-
+    simp(U,V).
+simp(plus(U,0),V) :-
+    simp(U,V).
+simp(plus(U,U),times(2,V)) :-
+    simp(U,V).
+simp(minus(U,U),0).
+% Some kind of base case is needed; multiple solutions could be avoided by demanding that U is atomic
+simp(U,U).
+% Keep top-level the same, simplify at lower level
+simp(plus(U,X),plus(V,Y)) :-
+    simp(U,V),
+    simp(X,Y).
 </div>
 
 <div class="nb-cell query">
