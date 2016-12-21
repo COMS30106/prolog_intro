@@ -1,0 +1,90 @@
+<div class="notebook">
+
+<div class="nb-cell program" data-background="true">
+:- use_rendering(graphviz).
+:- include(graphviz_swish).
+</div>
+
+<div class="nb-cell markdown">
+# Visualising terms and SLD trees with Graphviz
+[Graphviz](http://www.graphviz.org/) is a collection of programs for visualising graphs. Here, we conveniently use it for visualising Prolog terms and SLD trees.
+
+[`graphviz_swish.pl`](graphviz_swish.pl) defines the two main predicates `term/2` and `sld/2`. The query `?-term(+Term, -Dot)`, where `Term` is bound to a Prolog term, will return a variable `Dot`, which defines a tree in Graphviz format. For example, the query `?-term([a,b,b,a], Dot)` produces the following Graphviz input:
+
+	Dot = '
+        digraph {
+        node [shape=plaintext, fontname=Courier, fontsize=12]
+        0 [label="[|]"];
+        1 [label="a"];
+        0 -&gt; 1;
+        2 [label="[|]"];
+        0 -&gt; 2;
+        3 [label="b"];
+        2 -&gt; 3;
+        4 [label="[|]"];
+        2 -&gt; 4;
+        5 [label="b"];
+        4 -&gt; 5;
+        6 [label="[|]"];
+        4 -&gt; 6;
+        7 [label="a"];
+        6 -&gt; 7;
+        8 [label="[]"];
+        6 -&gt; 8;
+        }
+    '
+
+The command `?-term([a,b,b,a], Dot), X = dot(Dot).` then produces the following tree:
+</div>
+
+<div class="nb-cell query">
+term([a,b,b,a], _Dot), X = dot(_Dot).
+</div>
+
+<div class="nb-cell markdown">
+You can also try the following query:
+</div>
+
+<div class="nb-cell query">
+term1(_Dot), X = dot(_Dot).
+</div>
+
+<div class="nb-cell markdown">
+See [here](http://www.graphviz.org/pub/scm/graphviz2/doc/info/command.html) for more information about how to use Graphviz programs from the command line.
+
+Similarly, the query `?-Goal sld Dot`, where Goal is bound to a Prolog goal, will produce an atom, which defines a tree in Graphviz format (notice that `sld/2` has been defined as an infix operator and can thus be used without brackets). For example, the query `?-student_of(S,peter) sld Dot` produces the following tree when run through `dot/1`:
+</div>
+
+<div class="nb-cell query">
+sld(student_of(S,peter), _Dot), X = dot(_Dot).
+</div>
+
+<div class="nb-cell query">
+student_of(S,peter) sld _Dot, X = dot(_Dot).
+</div>
+
+<div class="nb-cell markdown">
+The following query results in the same tree:
+</div>
+
+<div class="nb-cell query">
+sld1(_Dot), X = dot(_Dot).
+</div>
+
+<div class="nb-cell markdown">
+Now, try the example queries `?-term2` and `?-sld2` that have been pre-defined in [`graphviz_swish.pl`](graphviz_swish.pl).
+</div>
+
+<div class="nb-cell query">
+term2(_Dot), X = dot(_Dot).
+</div>
+
+<div class="nb-cell query">
+sld2(_Dot), X = dot(_Dot).
+</div>
+
+<div class="nb-cell markdown">
+To use Graphviz in the SWISH notebook remember to use `use_rendering/1` and `include/1` predicates (see the top of the notebook for details).
+</div>
+
+</div>

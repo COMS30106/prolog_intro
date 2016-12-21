@@ -1,5 +1,6 @@
 # Visualising terms and SLD trees with Graphviz #
-[Graphviz](http://www.graphviz.org/) is a collection of programs for visualising graphs. Here, we conveniently use it for visualising Prolog terms and SLD trees.  
+[Graphviz](http://www.graphviz.org/) is a collection of programs for visualising graphs. Here, we conveniently use it for visualising Prolog terms and SLD trees.
+
 Download the file [`graphviz.pl`](graphviz.pl). This file defines the two main predicates `term/1` and `sld/1`. The query `?-term(Term)`, where `Term` is bound to a Prolog term, will produce a file `term.dot`, which defines a tree in Graphviz format. For example, the query `?-term([a,b,b,a])` produces the following Graphviz input:
 
     digraph {
@@ -28,7 +29,7 @@ The command `dot -T jpg -o term.jpg term.dot` then produces a JPEG file with the
 
 See [here](http://www.graphviz.org/pub/scm/graphviz2/doc/info/command.html) for more information about how to use Graphviz programs from the command line.
 
-Similarly, the query `?-sld Goal`, where `Goal` is bound to a Prolog goal, will produce a file `sld.dot`, which defines a tree in Graphviz format (notice that `sld/1` has been defined as a prefix operator and can thus be used without brackets). For example, the query `?-sld student_of(S,peter)` produces the following tree when run through `dot`:\
+Similarly, the query `?-sld Goal`, where `Goal` is bound to a Prolog goal, will produce a file `sld.dot`, which defines a tree in Graphviz format (notice that `sld/1` has been defined as a prefix operator and can thus be used without brackets). For example, the query `?-sld student_of(S,peter)` produces the following tree when run through `dot`:
 ![](sld.jpg)
 
 Now, try the example queries `?-term2` and `?-sld2` that have been pre-defined in `graphviz.pl`.
