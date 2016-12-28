@@ -1,6 +1,8 @@
 %%% Plotting terms as trees using Graphviz %%%
 
 term_list_linear(false).  % change to true for plotting lists linearly
+:- dynamic write_to_file/1.
+write_to_file(false).  % write the dot structure to a file?
 
 term(Term,Dot) :-
   gv_start('term.dot'),
@@ -83,6 +85,7 @@ prove_d(A,Goal,N,D) :-
   prove_d(B,Goal,N1,D1).
 
 resolve(A,true) :-
+  write_to_file(true),
   predicate_property(A,built_in),!,
   call(A).
 resolve(A,B):-
@@ -153,7 +156,7 @@ gv_max_id(1000).  % max number of nodes in the graph
 % open file and start new graph
 gv_start(FileName) :-
   retractall('$my_assert'(_)),
-  tell(FileName),
+  (write_to_file(true) -> tell(FileName); true),
   writes(['digraph {']),
   %writes(['graph [size="4,6"];']),
   writes(['node [shape=plaintext, fontname=Courier, fontsize=12]']).
@@ -167,7 +170,7 @@ gv_next :-
 % finish graph and close file
 gv_stop(Dot) :-
   writes(['}']),
-  told,
+  (write_to_file(true) -> told; true),
   get_dot(Dot).
 
 % start new subgraph
