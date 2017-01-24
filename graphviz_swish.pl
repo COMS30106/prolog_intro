@@ -1,11 +1,9 @@
 %%% Plotting terms as trees using Graphviz %%%
 
 term_list_linear(false).  % change to true for plotting lists linearly
-:- dynamic write_to_file/1.
-write_to_file(false).  % write the dot structure to a file?
 
 term(Term,Dot) :-
-  gv_start('term.dot'),
+  gv_start,
   Term =.. [Functor|Subterms],
   gv_root(Functor,0),
   term_list(Subterms,0),
@@ -56,13 +54,11 @@ term2(Dot) :-
 
 %%% Meta-interpreter plotting (part of) the SLD-tree using Graphviz %%%
 
-%:-op(1100,fx,sld).  % can write ?-sld Goal instead of ?-sld(Goal)
-
 sld(Goal,Dot) :-
   sld(Goal,5,Dot).  % default depth bound
 
 sld(Goal,D,_) :-
-  gv_start('sld.dot'),
+  gv_start,
   gv_root((?-Goal),0),
   prove_d(Goal,Goal,0,D),
   fail.  % failure-driven loop to get all solutions
@@ -84,10 +80,6 @@ prove_d(A,Goal,N,D) :-
   gv_node(N,(:-B),N1),
   prove_d(B,Goal,N1,D1).
 
-resolve(A,true) :-
-  write_to_file(true),
-  predicate_property(A,built_in),!,
-  call(A).
 resolve(A,B):-
   clause(A,B).
 
@@ -151,12 +143,11 @@ get_dot(In,Out) :-
 
 
 %%% Graphviz utilities %%%
-gv_max_id(1000).  % max number of nodes in the graph
+gv_max_id(200).  % max number of nodes in the graph
 
 % open file and start new graph
-gv_start(FileName) :-
+gv_start :-
   retractall('$my_assert'(_)),
-  (write_to_file(true) -> tell(FileName); true),
   writes(['digraph {']),
   %writes(['graph [size="4,6"];']),
   writes(['node [shape=plaintext, fontname=Courier, fontsize=12]']).
@@ -170,21 +161,7 @@ gv_next :-
 % finish graph and close file
 gv_stop(Dot) :-
   writes(['}']),
-  (write_to_file(true) -> told; true),
   get_dot(Dot).
-
-% start new subgraph
-gv_cluster_start :-
-  ( retract('$gv_cluster'(N)) -> N1 is N+1
-  ; otherwise                 -> N1=0
-  ),assert('$gv_cluster'(N1)),
-  writes(['subgraph cluster_',N1,' {']),
-  writes(['[style=filled, color=lightgrey];']),
-  writes(['node [style=filled,color=white];']).
-
-% finish subgraph
-gv_cluster_stop :-
-  writes(['}']).
 
 % write the root of a tree and initialise node IDs
 gv_root(L,N) :-
