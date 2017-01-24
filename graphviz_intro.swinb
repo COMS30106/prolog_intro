@@ -243,7 +243,7 @@ Similarly, the query `?-sld(Goal,Dot)`, where Goal is bound to a Prolog goal, wi
 </div>
 
 <div class="nb-cell query">
-student_of(S,peter) sld _Dot, X = dot(_Dot).
+sld(student_of(S,peter), _Dot), X = dot(_Dot).
 </div>
 
 <div class="nb-cell markdown">
