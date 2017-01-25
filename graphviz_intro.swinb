@@ -2,7 +2,7 @@
 
 <div class="nb-cell program" data-background="true">
 :- use_rendering(graphviz).
-:- include(example(swish_graphviz)).
+:- include(example(graphviz_swish)).
 </div>
 
 <div class="nb-cell markdown">
