@@ -61,31 +61,34 @@ fetch_url_to_terms(URL, _, Terms, _) :-
 fetch_url_to_terms(URL, LogFile, Terms, Result) :-
     tell(LogFile),
     (   catch(
-            http_open(URL, InStream,
+            http_open(URL, _,
             [
                 timeout(20)
             ]),
             E,
-            (message_to_string(E, S),write('GET FAILURE: '),write(S),fail)
+            (message_to_string(E, S),write('404: '),write(URL),write('\nGET FAILURE: '),write(S),fail)
         )
      ->
-        % read http stream and parse it
-        write(URL),
-        dtd(html, DTD),
-        load_structure(stream(InStream), Terms,
-        [ dtd(DTD),
-          dialect(sgml),
-          shorttag(false),
-          max_errors(2000),
-          call(error, on_error)
-        ]),
-        close(InStream),
-        Result = 'ok'
+        URLQ = URL
     ;
         % failed to fetch file
-        Terms = [],
-        Result = E
+        %Terms = [],
+        %Result = E
+        base_url(BURL), atom_concat(BURL, '404.html', URLQ)
     ),
+    % read http stream and parse it
+    http_open(URLQ, InStream, [timeout(20)]),
+    dtd(html, DTD),
+    load_structure(stream(InStream), Terms,
+    [ dtd(DTD),
+      dialect(sgml),
+      shorttag(false),
+      max_errors(2000),
+      call(error, on_error)
+    ]),
+    close(InStream),
+    Result = 'ok',
+    %
     told,
     assert(html_cache(URL, Terms)).
 
