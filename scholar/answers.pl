@@ -1,5 +1,6 @@
 :- consult(scholar).
 
+% Base URL. HAS TO END WITH */* (URL concatenation).
 base_url('http://localhost:8080/').
 
 %author('Rafal Bogacz','m7abl3ty.html').	% for testing
